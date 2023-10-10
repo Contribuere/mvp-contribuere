@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { FacebookIcon, InstagramIcon, TwitterIcon } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 const Profile = () => {
 	return (
@@ -30,7 +31,9 @@ const Profile = () => {
 			<main className="flex-1 p-8 space-y-4 bg-blue-100">
 				<div className="flex justify-between items-baseline">
 					<h1 className="text-2xl font-semibold">Nombre</h1>
-					<Button>Editar Perfil</Button>
+					<Link href={'/profile/edit-profile'}>
+						<Button>Editar perfil</Button>
+					</Link>
 				</div>
 				<p className="bg-slate-400 rounded-md p-4">
 					Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat neque necessitatibus dicta minus, tempore
