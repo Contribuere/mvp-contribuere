@@ -1,3 +1,4 @@
+import { Toaster } from 'react-hot-toast'
 import './globals.css'
 
 export const metadata = {
@@ -9,6 +10,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 	return (
 		<html lang="en">
 			<body className="w-full m-auto flex min-h-screen">
+				<Toaster />
 				<main className="flex flex-1">{children}</main>
 			</body>
 		</html>
