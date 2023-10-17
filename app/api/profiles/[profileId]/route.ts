@@ -5,12 +5,10 @@ import { NextResponse } from 'next/server'
 export async function PATCH(req: Request, { params }: { params: { profileId: string } }) {
 	try {
 		const cookieStore = cookies()
-		const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+		const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore })
 
 		const { profileId } = params
 		const values = await req.json()
-
-		const { username } = values
 
 		const {
 			data: { user },
@@ -20,7 +18,10 @@ export async function PATCH(req: Request, { params }: { params: { profileId: str
 			return new NextResponse('Unauthorized', { status: 401 })
 		}
 
-		const { data, error } = await supabase.from('profiles').update({ username: username }).eq('id', profileId)
+		const { data, error } = await supabase
+			.from('profiles')
+			.update({ ...values })
+			.eq('id', profileId)
 
 		if (error) {
 			console.log('ERROR_UPDATE', error.message)
