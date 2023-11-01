@@ -1,5 +1,10 @@
+import { ThemeProvider } from '@/components/providers/theme-provider'
+import { cn } from '@/lib/utils'
+import { Inter } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
 import './globals.css'
+
+const font = Inter({ subsets: ['latin'] })
 
 export const metadata = {
 	title: 'Create Next App',
@@ -8,10 +13,12 @@ export const metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="en">
-			<body className="w-full m-auto flex min-h-screen">
-				<Toaster />
-				<main className="flex flex-1">{children}</main>
+		<html lang="en" suppressHydrationWarning>
+			<body className={cn(font.className, '')}>
+				<ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} storageKey="contribuere-theme">
+					<Toaster />
+					{children}
+				</ThemeProvider>
 			</body>
 		</html>
 	)

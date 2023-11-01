@@ -58,7 +58,7 @@ const Profile = async () => {
 			<main className="flex-1 p-8 space-y-4 bg-blue-100">
 				<div className="flex justify-between items-baseline">
 					<h1 className="text-2xl font-semibold">{profile?.username}</h1>
-					<Link href={'/profile/edit-profile'}>
+					<Link href={'/profile/edit'}>
 						<Button>Editar perfil</Button>
 					</Link>
 				</div>
