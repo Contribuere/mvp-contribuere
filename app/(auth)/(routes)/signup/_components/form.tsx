@@ -5,8 +5,12 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import axios, { AxiosError } from 'axios'
+import { useRouter } from 'next/navigation'
+import toast from 'react-hot-toast'
 
 const formSchema = z
 	.object({
@@ -27,13 +31,20 @@ const formSchema = z
 		confirmPassword: z.string().min(1, {
 			message: 'Confirm password is required',
 		}),
+		terms: z.boolean(),
 	})
 	.refine((data) => data.password === data.confirmPassword, {
 		message: "Passwords don't match",
 		path: ['confirmPassword'],
 	})
+	.refine((data) => data.terms === true, {
+		message: 'You must accept terms and conditions',
+		path: ['terms'],
+	})
 
 export const SignUpForm: React.FC = () => {
+	const router = useRouter()
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -41,13 +52,21 @@ export const SignUpForm: React.FC = () => {
 			username: '',
 			password: '',
 			confirmPassword: '',
+			terms: false,
 		},
 	})
 
 	const { isSubmitting } = form.formState
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		console.log(values)
+		try {
+			const { data } = await axios.post('/api/auth/sign-up', values)
+			router.push('login')
+			toast.success(data)
+			form.reset()
+		} catch (error) {
+			if (error instanceof AxiosError) toast.error(error.response?.data)
+		}
 	}
 
 	return (
@@ -104,6 +123,22 @@ export const SignUpForm: React.FC = () => {
 							<FormControl>
 								<Input type="password" disabled={isSubmitting} {...field} />
 							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name="terms"
+					render={({ field }) => (
+						<FormItem className="flex flex-col">
+							<div className="flex flex-row items-start space-x-3 space-y-0 p-4 shadow">
+								<FormControl>
+									<Checkbox disabled={isSubmitting} checked={field.value} onCheckedChange={field.onChange} />
+								</FormControl>
+								<FormLabel>Accept terms and conditions</FormLabel>
+							</div>
 							<FormMessage />
 						</FormItem>
 					)}

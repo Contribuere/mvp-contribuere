@@ -6,12 +6,12 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
 	const requestUrl = new URL(request.url)
-	const formData = await request.formData()
-	const email = String(formData.get('email'))
-	const password = String(formData.get('password'))
-	const supabase = createRouteHandlerClient({ cookies })
 
-	const { error } = await supabase.auth.signUp({
+	const { email, password, username } = await request.json()
+
+	const supabase = createRouteHandlerClient<Database>({ cookies })
+
+	const { data: createdUser, error: errorSignUp } = await supabase.auth.signUp({
 		email,
 		password,
 		options: {
@@ -19,15 +19,19 @@ export async function POST(request: Request) {
 		},
 	})
 
-	if (error) {
-		return NextResponse.redirect(`${requestUrl.origin}/login?error=Could not authenticate user`, {
-			// a 301 status is required to redirect from a POST to a GET route
-			status: 301,
-		})
+	if (errorSignUp) {
+		return new NextResponse('Could not authenticate user', { status: 301 })
 	}
 
-	return NextResponse.redirect(`${requestUrl.origin}/login?message=Check email to continue sign in process`, {
-		// a 301 status is required to redirect from a POST to a GET route
-		status: 301,
-	})
+	const { user } = createdUser
+
+	const { error: profileError } = await supabase
+		.from('profiles')
+		.insert({ id: user?.id!, email: user?.email, username })
+
+	if (profileError) {
+		return new NextResponse('Could not authenticate user', { status: 301 })
+	}
+
+	return new NextResponse('Check email to continue sign in process', { status: 201 })
 }
