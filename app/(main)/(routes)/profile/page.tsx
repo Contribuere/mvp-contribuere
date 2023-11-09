@@ -36,7 +36,7 @@ const Profile = async () => {
 				</AspectRatio>
 				<div className="absolute bottom-14 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
 					<div className="flex flex-col items-center gap-4">
-						<Avatar className="rounded-md w-28 h-28">
+						<Avatar className="rounded-full w-28 h-28">
 							{profile?.avatar_url ? (
 								<AvatarImage src={profile?.avatar_url} />
 							) : (

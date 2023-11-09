@@ -1,86 +1,88 @@
 'use client'
 
-import axios from 'axios'
-import { ImageIcon, Pencil, PlusCircle } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { Trash } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import toast from 'react-hot-toast'
-import * as z from 'zod'
-
-import { FileUpload } from '@/components/file-upload'
-import { Button } from '@/components/ui/button'
+import { ChangeEvent, useRef } from 'react'
 
 interface BannerFormProps {
-	initialData: Profile
-	profileId: string
+	bannerUrl?: Profile['banner_url']
+	profileId: Profile['id']
 }
 
-const formSchema = z.object({
-	banner_url: z.string().min(1, {
-		message: 'Image is required',
-	}),
-})
-
-export const BannerForm = ({ initialData, profileId }: BannerFormProps) => {
-	const [isEditing, setIsEditing] = useState(false)
-
-	const toggleEdit = () => setIsEditing((current) => !current)
-
+export const BannerForm = ({ bannerUrl, profileId }: BannerFormProps) => {
+	const inputRef = useRef<HTMLInputElement>(null)
 	const router = useRouter()
+	const supabase = createClientComponentClient<Database>()
 
-	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+	function handleImageClick() {
+		inputRef?.current?.click()
+	}
+
+	async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
+		if (event.target.files && event.target.files.length > 0) {
+			const selectedFile = event.target.files[0]
+
+			try {
+				if (selectedFile && profileId) {
+					const { data, error } = await supabase.storage
+						.from('avatars')
+						.upload(`${profileId}/${selectedFile.name}`, selectedFile, { upsert: true })
+
+					if (error) throw error
+
+					const res = supabase.storage.from('avatars').getPublicUrl(data.path)
+					const publicUrl = res.data.publicUrl
+					const updateUserResponse = await supabase
+						.from('profiles')
+						.update({ banner_url: publicUrl })
+						.eq('id', profileId)
+					if (updateUserResponse.error) throw updateUserResponse.error
+					router.refresh()
+				}
+			} catch (error) {
+				console.log('error', error)
+			}
+		}
+	}
+
+	async function removeFile() {
 		try {
-			await axios.patch(`/api/profiles/${profileId}`, values)
-			toast.success('Course updated')
-			toggleEdit()
+			const updateUserResponse = await supabase.from('profiles').update({ banner_url: null }).eq('id', profileId)
+			if (updateUserResponse.error) throw updateUserResponse.error
 			router.refresh()
-		} catch {
-			toast.error('Something went wrong')
+		} catch (error) {
+			console.log('error', error)
 		}
 	}
 
 	return (
-		<div className="mt-6 border bg-slate-100 rounded-md p-4">
-			<div className="font-medium flex items-center justify-between">
-				Banner picture
-				<Button onClick={toggleEdit} variant="ghost">
-					{isEditing && <>Cancel</>}
-					{!isEditing && !initialData.banner_url && (
-						<>
-							<PlusCircle className="h-4 w-4 mr-2" />
-							Add an image
-						</>
-					)}
-					{!isEditing && initialData.banner_url && (
-						<>
-							<Pencil className="h-4 w-4 mr-2" />
-							Edit image
-						</>
-					)}
-				</Button>
-			</div>
-			{!isEditing &&
-				(!initialData.banner_url ? (
-					<div className="flex items-center justify-center h-60 bg-slate-200 rounded-md">
-						<ImageIcon className="h-10 w-10 text-slate-500" />
-					</div>
-				) : (
-					<div className="relative aspect-video mt-2">
-						<Image alt="Upload" fill className="object-cover rounded-md" src={initialData.banner_url} />
-					</div>
-				))}
-			{isEditing && (
-				<div>
-					<FileUpload
-						endpoint="bannerImage"
-						onChange={(url) => {
-							if (url) {
-								onSubmit({ banner_url: url })
-							}
-						}}
-					/>
-					<div className="text-xs text-muted-foreground mt-4">16:9 aspect ratio recommended</div>
+		<div className="border border-dashed min-h-[8rem] border-rose-600 p-2 rounded-md space-y-2">
+			{!bannerUrl ? (
+				<div className="w-full h-32 flex items-center justify-center bg-transparent rounded-md">
+					<Input type="file" ref={inputRef} accept="images/*" className="hidden" onChange={handleFileChange} />
+					<p
+						onClick={handleImageClick}
+						className="w-full h-full flex justify-center items-center text-rose-600 text-base cursor-pointer"
+					>
+						Change your banner picture
+					</p>
+				</div>
+			) : (
+				<div className="relative h-32 w-full aspect-auto">
+					<Button
+						title="Remove profile picture"
+						className="absolute top-2 right-2 z-10"
+						variant={'outline'}
+						size={'icon'}
+						onClick={removeFile}
+					>
+						<Trash className="hover:text-rose-600" />
+					</Button>
+					<Image alt="profile picture" fill className="object-cover rounded-md italic" src={bannerUrl} />
 				</div>
 			)}
 		</div>

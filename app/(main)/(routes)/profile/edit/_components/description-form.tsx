@@ -51,10 +51,10 @@ export const DescriptionForm: React.FC<DescriptionFormProps> = ({ initialData, p
 	}
 
 	return (
-		<div className="mt-6 border bg-slate-100 rounded-md p-4">
+		<div className="border border-dashed border-rose-600 rounded-md p-4">
 			<div className="font-medium flex items-center justify-between">
-				Description
-				<Button onClick={toggleEditing} variant={'ghost'}>
+				<span className="text-rose-600">Update Bio</span>
+				<Button onClick={toggleEditing} variant={'outline'}>
 					{isEditing ? (
 						<>Cancel</>
 					) : (
@@ -88,7 +88,9 @@ export const DescriptionForm: React.FC<DescriptionFormProps> = ({ initialData, p
 					</form>
 				</Form>
 			) : (
-				<p className="text-sm mt-2">{initialData.description}</p>
+				<p className={`text-sm mt-3 ${initialData.description ? '' : 'text-rose-600'}`}>
+					{initialData.description ?? 'Describe your talents'}
+				</p>
 			)}
 		</div>
 	)

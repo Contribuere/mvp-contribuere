@@ -51,10 +51,10 @@ export const UsernameForm: React.FC<UsernameFormProps> = ({ initialData, profile
 	}
 
 	return (
-		<div className="mt-6 border bg-slate-100 rounded-md p-4">
+		<div className="border border-dashed border-rose-600 rounded-md p-4">
 			<div className="font-medium flex items-center justify-between">
-				Username
-				<Button onClick={toggleEditing} variant={'ghost'}>
+				<span className="text-rose-600">Username</span>
+				<Button onClick={toggleEditing} variant={'outline'}>
 					{isEditing ? (
 						<>Cancel</>
 					) : (
@@ -88,7 +88,7 @@ export const UsernameForm: React.FC<UsernameFormProps> = ({ initialData, profile
 					</form>
 				</Form>
 			) : (
-				<p className="text-sm mt-2">{initialData.username}</p>
+				<p className="text-sm mt-3">{initialData.username}</p>
 			)}
 		</div>
 	)
