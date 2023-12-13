@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation'
 import { AvatarForm } from './_components/avatar-form'
 import { BannerForm } from './_components/banner-form'
 import { DescriptionForm } from './_components/description-form'
+import { StripeSection } from './_components/stripe-section'
 import { UsernameForm } from './_components/username-form'
 
 async function EditProfile() {
@@ -50,6 +51,7 @@ async function EditProfile() {
 				<BannerForm bannerUrl={profile.banner_url} profileId={profile.id} />
 				<UsernameForm initialData={profile} profileId={profile.id} />
 				<DescriptionForm initialData={profile} profileId={profile.id} />
+				<StripeSection />
 				<Link className="mt-auto mx-auto" href="/profile">
 					<Button variant={'link'}>Cancel</Button>
 				</Link>
