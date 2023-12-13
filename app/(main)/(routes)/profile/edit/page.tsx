@@ -9,6 +9,8 @@ import { DescriptionForm } from './_components/description-form'
 import { StripeSection } from './_components/stripe-section'
 import { UsernameForm } from './_components/username-form'
 
+export const dynamic = 'force-dynamic'
+
 async function EditProfile() {
 	const supabase = createServerComponentClient<Database>({ cookies })
 

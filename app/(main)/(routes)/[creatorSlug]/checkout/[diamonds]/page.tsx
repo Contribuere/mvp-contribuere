@@ -10,6 +10,9 @@ interface CheckoutPageProps {
 		diamonds: string
 	}
 }
+
+export const dynamic = 'force-dynamic'
+
 export default async function CheckoutPage({ params }: CheckoutPageProps) {
 	const { creatorSlug, diamonds } = params
 

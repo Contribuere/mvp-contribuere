@@ -12,6 +12,9 @@ interface ContentCreatorPageProps {
 		creatorSlug: string
 	}
 }
+
+export const dynamic = 'force-dynamic'
+
 export default async function ContentCreatorPage({ params }: ContentCreatorPageProps) {
 	const { creatorSlug } = params
 
