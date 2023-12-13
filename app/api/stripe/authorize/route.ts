@@ -1,11 +1,8 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
-import stripe from '../../../../config/stripe'
 
 export async function GET(req: NextRequest) {
 	try {
-		const cookieStore = cookies()
+		/* const cookieStore = cookies()
 		const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
 
 		const { data: user } = await supabase.auth.getUser()
@@ -49,8 +46,8 @@ export async function GET(req: NextRequest) {
 		} catch (error) {
 			throw error
 		}
-
-		return NextResponse.json({ data: accountLink.url })
+ */
+		return NextResponse.json({ data: 'onboarding' })
 	} catch (error) {
 		console.log({ error })
 		return new NextResponse('Internal server error', { status: 500 })
