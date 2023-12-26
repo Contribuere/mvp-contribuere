@@ -1,32 +1,25 @@
-import { Button } from '@/components/ui/button'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
-import Image from 'next/image'
-import Link from 'next/link'
-import TopCreator from '../../_components/TopCreator'
+import { Button } from '@/components/ui/button';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import Image from 'next/image';
+import Link from 'next/link';
+import TopCreator from '../../_components/TopCreator';
 
-export const dynamic = 'force-dynamic'
 
 export default async function Index() {
-	const supabase = createServerComponentClient<Database>({ cookies })
+	const supabase = createServerComponentClient<Database>({ cookies });
 
-	const today = new Date()
-	const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
-	const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0)
-
+	//get transactions of the current month
 	const { data, error } = await supabase
 		.from('profiles')
 		.select('id, username, avatar_url, transactions ( id, diamonds )')
 		.not('transactions', 'is', null)
-		.gte('transactions.created_at', startOfMonth.toISOString())
-		.lte('transactions.created_at', endOfMonth.toISOString())
-		.limit(5)
+		.limit(5);
 
 	if (error) {
-		console.log(error.message)
+		console.log(error.message);
 	}
 
-	console.log(data)
+	console.log(data);
 
 	return (
 		<section className="min-h-screen w-full flex flex-col p-4">
@@ -49,7 +42,11 @@ export default async function Index() {
 			<main className="flex flex-1 flex-col items-center space-y-8 p-4">
 				<h2 className="text-xs font-semibold">The top creators of the month</h2>
 				<ul className="flex flex-grow flex-col gap-4">
-					{data?.map((creator) => <TopCreator key={creator.id} creator={creator} />)}
+					{data?.map((creator) => (
+						<div key={creator.id}>
+							<TopCreator creator={creator} />
+						</div>
+					))}
 				</ul>
 
 				<div className="flex flex-col gap-2 items-center mt-auto">
@@ -62,5 +59,5 @@ export default async function Index() {
 				</div>
 			</main>
 		</section>
-	)
+	);
 }

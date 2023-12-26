@@ -22,8 +22,6 @@ export const DiamondsForm: React.FC = () => {
 	const router = useRouter()
 	const pathname = usePathname()
 
-	console.log(pathname)
-
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
