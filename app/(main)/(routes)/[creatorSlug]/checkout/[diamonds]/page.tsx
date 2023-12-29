@@ -25,13 +25,12 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
 		.single()
 
 	if (profileError) {
-		return redirect(`/${creatorSlug}`)
+		return redirect('/')
 	}
 
 	return (
 		<section className="min-h-screen w-full flex flex-col justify-center items-center container p-4 space-y-4">
 			<header className="self-start">
-				<h1 className="text-2xl">Titulo</h1>
 				<p className="text-sm">
 					Thank you for choosing <span className="font-bold text-rose-600">Incognito.cash</span>
 				</p>
@@ -50,7 +49,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
 					</div>
 				</section>
 				<section>
-					<CheckoutForm />
+					<CheckoutForm diamonds={diamonds} slug={creatorSlug} />
 				</section>
 			</main>
 		</section>

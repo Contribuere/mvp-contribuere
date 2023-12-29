@@ -1,7 +1,6 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { usePathname, useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -9,27 +8,37 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Textarea } from '@/components/ui/textarea'
+import axios from 'axios'
+import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 
 const formSchema = z
 	.object({
 		comment: z.string().optional(),
 		terms: z.boolean(),
+		diamonds: z.string().min(1),
+		slug: z.string().min(1),
 	})
 	.refine((data) => data.terms === true, {
 		message: 'Must accept terms and conditions',
 		path: ['terms'],
 	})
 
-export const CheckoutForm: React.FC = () => {
+interface CheckoutFormProps {
+	diamonds: string
+	slug: string
+}
+
+export const CheckoutForm: React.FC<CheckoutFormProps> = ({ diamonds, slug }) => {
 	const router = useRouter()
-	const pathname = usePathname()
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			comment: '',
 			terms: false,
+			diamonds: diamonds,
+			slug: slug,
 		},
 	})
 
@@ -37,7 +46,9 @@ export const CheckoutForm: React.FC = () => {
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		try {
-			console.log(values)
+			const response = await axios.post('/api/checkout', values)
+			toast.success(response.data)
+			router.push(`/${slug}`)
 		} catch (error) {
 			console.log({ error })
 			toast.error('Something went wrong')
