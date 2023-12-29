@@ -1,25 +1,23 @@
-import { Button } from '@/components/ui/button';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import Image from 'next/image';
-import Link from 'next/link';
-import TopCreator from '../../_components/TopCreator';
-
+import { Button } from '@/components/ui/button'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
+import Image from 'next/image'
+import Link from 'next/link'
+import TopCreator from '../../_components/TopCreator'
 
 export default async function Index() {
-	const supabase = createServerComponentClient<Database>({ cookies });
+	const supabase = createServerComponentClient<Database>({ cookies })
 
 	//get transactions of the current month
 	const { data, error } = await supabase
 		.from('profiles')
 		.select('id, username, avatar_url, transactions ( id, diamonds )')
 		.not('transactions', 'is', null)
-		.limit(5);
+		.limit(5)
 
 	if (error) {
-		console.log(error.message);
+		console.log(error.message)
 	}
-
-	console.log(data);
 
 	return (
 		<section className="min-h-screen w-full flex flex-col p-4">
@@ -59,5 +57,5 @@ export default async function Index() {
 				</div>
 			</main>
 		</section>
-	);
+	)
 }
